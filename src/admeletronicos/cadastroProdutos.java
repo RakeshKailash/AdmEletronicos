@@ -46,10 +46,10 @@ public class cadastroProdutos extends javax.swing.JFrame {
         txt_idProduto = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         txt_fornecedor = new javax.swing.JTextField();
-        txt_categoria = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         btn_atualizar = new javax.swing.JButton();
         btn_limpar = new javax.swing.JButton();
+        combo_categorias = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_produtos = new javax.swing.JTable();
@@ -108,9 +108,6 @@ public class cadastroProdutos extends javax.swing.JFrame {
         txt_fornecedor.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         txt_fornecedor.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
-        txt_categoria.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        txt_categoria.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-
         jLabel6.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jLabel6.setText("Categoria:");
 
@@ -124,6 +121,13 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
         });
 
+        combo_categorias.setMaximumRowCount(20);
+        combo_categorias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_categoriasActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -134,21 +138,15 @@ public class cadastroProdutos extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGap(0, 18, Short.MAX_VALUE)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txt_fornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(92, 92, 92))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txt_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txt_categoria, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -161,20 +159,25 @@ public class cadastroProdutos extends javax.swing.JFrame {
                                 .addComponent(txt_quantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(72, 72, 72))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btn_cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_atualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_excluir, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_limpar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txt_idProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btn_cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btn_atualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btn_excluir, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btn_limpar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                                .addComponent(txt_idProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 743, Short.MAX_VALUE))
         );
@@ -200,7 +203,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_categoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -340,35 +343,48 @@ public class cadastroProdutos extends javax.swing.JFrame {
             responseH = true;
             System.out.println("Conectado com sucesso ao Banco de Dados");
 
-            // our SQL SELECT query. 
-            // if you only need a few columns, specify them by name instead of using "*"
-            String query = "SELECT * FROM produtos";
+            // Query para buscar os Produtos no banco.
+            // Também relacionamos o ID de Fornecedor e ID de Categoria
+            // com seus respectivos nomes nas tabelas Fornecedores e Categorias
+            String produtosQuery = "SELECT produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto FROM produtos JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria";
 
-            // create the java statement
-            Statement st = conn.createStatement();
+            // Query para buscar as Categorias no banco.
+            // Aqui queremos apenas o nome de cada Categoria
+            String categoriasQuery = "SELECT nomeCategoria FROM categorias";
 
-            // execute the query, and get a java resultset
-            ResultSet rs = st.executeQuery(query);
+            // Criar um Statement para trabalhar com MySQL
+            Statement statement = conn.createStatement();
 
-            // iterate through the java resultset
-//            while (rs.next()) {
-//                int idProd = rs.getInt("idProduto");
-//                String nome = rs.getString("nomeProduto");
-//                int quantia = rs.getInt("quantiaProduto");
-//                int idForn = rs.getInt("idFornecedor");
-//                double valor = rs.getDouble("valorProduto");
-            // print the results
-//                System.out.format("%s, %s, %s, %s, %s\n", idProd, nome, idForn, quantia, valor);
-            int columns = rs.getMetaData().getColumnCount();
-            while (rs.next()) {
+            // Executar a Query dos Produtos e armazenar os resultados em um ResultSet
+            ResultSet result = statement.executeQuery(produtosQuery);
+
+            int columns = result.getMetaData().getColumnCount();
+
+            while (result.next()) {
                 Object[] row = new Object[columns];
                 for (int i = 1; i <= columns; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    row[i - 1] = result.getObject(i);
                 }
-                ((DefaultTableModel) table_produtos.getModel()).insertRow(rs.getRow() - 1, row);
+                ((DefaultTableModel) table_produtos.getModel()).insertRow(result.getRow() - 1, row);
             }
 //            }
-            st.close();
+
+            result = statement.executeQuery(categoriasQuery);
+
+            columns = result.getMetaData().getColumnCount();
+
+            combo_categorias.removeAllItems();
+
+            while (result.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 1; i <= columns; i++) {
+                    row[i - 1] = result.getObject(i);
+                }
+                combo_categorias.addItem(row[result.getRow() - 1].toString());
+            }
+
+            statement.close();
+
         } catch (SQLException e) {
             System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
             responseH = false;
@@ -391,7 +407,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
 
             txt_idProduto.setText(produto[0]);
             txt_nome.setText(produto[1]);
-            txt_categoria.setText(produto[2]);
+            
             txt_quantidade.setText(produto[3]);
             txt_fornecedor.setText(produto[4]);
             txt_valor.setText(produto[5]);
@@ -402,11 +418,17 @@ public class cadastroProdutos extends javax.swing.JFrame {
         table_produtos.clearSelection();
         txt_idProduto.setText(null);
         txt_nome.setText(null);
-        txt_categoria.setText(null);
+
         txt_quantidade.setText(null);
         txt_fornecedor.setText(null);
         txt_valor.setText(null);
     }//GEN-LAST:event_btn_limparMouseClicked
+
+    private void combo_categoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_categoriasActionPerformed
+        int combo = combo_categorias.getSelectedIndex();
+        System.out.println(Integer.toString(combo));
+
+    }//GEN-LAST:event_combo_categoriasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -448,6 +470,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private javax.swing.JButton btn_cadastrar;
     private javax.swing.JButton btn_excluir;
     private javax.swing.JButton btn_limpar;
+    private javax.swing.JComboBox<String> combo_categorias;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -460,7 +483,6 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable table_produtos;
-    private javax.swing.JTextField txt_categoria;
     private javax.swing.JTextField txt_fornecedor;
     private javax.swing.JTextField txt_idProduto;
     private javax.swing.JTextField txt_nome;
