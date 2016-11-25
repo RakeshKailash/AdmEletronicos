@@ -7,6 +7,9 @@ package admeletronicos;
 
 import java.sql.*;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -45,17 +48,18 @@ public class cadastroProdutos extends javax.swing.JFrame {
         btn_excluir = new javax.swing.JButton();
         txt_idProduto = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        txt_fornecedor = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         btn_atualizar = new javax.swing.JButton();
         btn_limpar = new javax.swing.JButton();
         combo_categorias = new javax.swing.JComboBox<>();
+        combo_fornecedores = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_produtos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -105,14 +109,12 @@ public class cadastroProdutos extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jLabel8.setText("ID do Produto:");
 
-        txt_fornecedor.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        txt_fornecedor.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-
         jLabel6.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jLabel6.setText("Categoria:");
 
         btn_atualizar.setText("Atualizar Registro");
         btn_atualizar.setToolTipText("");
+        btn_atualizar.setEnabled(false);
 
         btn_limpar.setText("Limpar Campos");
         btn_limpar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -129,6 +131,14 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
         });
 
+        combo_fornecedores.setMaximumRowCount(20);
+        combo_fornecedores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione um Fornecedor" }));
+        combo_fornecedores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_fornecedoresActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -142,8 +152,8 @@ public class cadastroProdutos extends javax.swing.JFrame {
                                 .addGap(0, 18, Short.MAX_VALUE)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txt_fornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(92, 92, 92))
+                                .addComponent(combo_fornecedores, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(164, 164, 164))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -200,7 +210,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txt_valor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_fornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(combo_fornecedores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -253,11 +263,15 @@ public class cadastroProdutos extends javax.swing.JFrame {
         jScrollPane1.setViewportView(table_produtos);
         if (table_produtos.getColumnModel().getColumnCount() > 0) {
             table_produtos.getColumnModel().getColumn(0).setResizable(false);
+            table_produtos.getColumnModel().getColumn(0).setPreferredWidth(5);
             table_produtos.getColumnModel().getColumn(1).setResizable(false);
             table_produtos.getColumnModel().getColumn(2).setResizable(false);
+            table_produtos.getColumnModel().getColumn(2).setPreferredWidth(100);
             table_produtos.getColumnModel().getColumn(3).setResizable(false);
+            table_produtos.getColumnModel().getColumn(3).setPreferredWidth(20);
             table_produtos.getColumnModel().getColumn(4).setResizable(false);
             table_produtos.getColumnModel().getColumn(5).setResizable(false);
+            table_produtos.getColumnModel().getColumn(5).setPreferredWidth(10);
         }
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -302,62 +316,196 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private void btn_cadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cadastrarActionPerformed
         //Declaração de variáveis para armazenar os valores do 
         //formulário de cadastro
+        try {
+            String nomeProduto = null, nomeFornecedor = null, nomeCategoria = null;
+            int quantiaProduto = 0, idFornecedor = 0, idCategoria = 0;
+            double valorProduto = 0.00;
+            Connection conn = getConnection();
 
-        String nomeProduto = null, nomeFornecedor = null;
-        int quantiaProduto = 0;
-        double valorProduto = 0.00;
+            //Atribuição dos valores às variáveis, se o campo correspondente
+            // tiver algum valor preenchido
+            if (!txt_quantidade.getText().isEmpty()) {
+                quantiaProduto = Integer.parseInt(txt_quantidade.getText());
+            }
 
-        //Atribuição dos valores às variáveis, se o campo correspondente
-        // tiver algum valor preenchido
-        if (!txt_quantidade.getText().isEmpty()) {
-            quantiaProduto = Integer.parseInt(txt_quantidade.getText());
+            if (!txt_valor.getText().isEmpty()) {
+                valorProduto = Double.parseDouble(txt_valor.getText());
+            }
+
+            if (!txt_nome.getText().isEmpty()) {
+                nomeProduto = txt_nome.getText();
+            }
+
+            if (!combo_categorias.getSelectedItem().toString().equals("Selecione uma Categoria")) {
+                nomeCategoria = combo_categorias.getSelectedItem().toString();
+                System.out.println("Chegou aqui");
+                ResultSet result = retrieveDB("categorias", "`idCategoria`", "`nomeCategoria` = '" + nomeCategoria + "'", null, 0);
+                while (result.next()) {
+                    idCategoria = result.getInt("idCategoria");
+                }
+            }
+
+            if (!combo_fornecedores.getSelectedItem().toString().equals("Selecione um Fornecedor")) {
+                nomeFornecedor = combo_fornecedores.getSelectedItem().toString();
+                ResultSet result = retrieveDB("fornecedores", "`idFornecedor`", "`nomeFornecedor` = '" + nomeFornecedor + "'", null, 0);
+                while (result.next()) {
+                    idFornecedor = result.getInt("idFornecedor");
+                }
+            }
+
+            String[] produto = new String[5];
+
+            produto[0] = nomeProduto;
+            produto[1] = Integer.toString(idCategoria);
+            produto[2] = Integer.toString(quantiaProduto);
+            produto[3] = Integer.toString(idFornecedor);
+            produto[4] = Double.toString(valorProduto);
+
+            boolean resultInsert = insertDB("produtos", "`nomeProduto`, `idCategoria`, `quantiaProduto`, `idFornecedor`, `valorProduto`", produto);
+
+            if (resultInsert) {
+                updateProdutos();
+            }
+
+//            String queryCategoria = "SELECT idCategoria FROM categorias WHERE nomeCategoria = " + nomeCategoria + " LIMIT 1";
+            // Executar a Query das Categorias e armazenar os resultados em um ResultSet
+            //System.out.println("Nome: " + nomeProduto);
+            //System.out.println("Fornecedor: " + nomeFornecedor);
+            //System.out.println("Quantia: " + String.valueOf(quantiaProduto));
+            //System.out.println("Valor: " + String.valueOf(valorProduto));
+        } catch (SQLException e) {
+
         }
-
-        if (!txt_valor.getText().isEmpty()) {
-            valorProduto = Double.parseDouble(txt_valor.getText());
-        }
-
-        if (!txt_nome.getText().isEmpty()) {
-            nomeProduto = txt_nome.getText();
-        }
-
-        if (!txt_fornecedor.getText().isEmpty()) {
-            nomeFornecedor = txt_fornecedor.getText();
-        }
-
-        System.out.println("Nome: " + nomeProduto);
-        System.out.println("Fornecedor: " + nomeFornecedor);
-        System.out.println("Quantia: " + String.valueOf(quantiaProduto));
-        System.out.println("Valor: " + String.valueOf(valorProduto));
 
     }//GEN-LAST:event_btn_cadastrarActionPerformed
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+    public void updateProdutos() throws SQLException {
+        Connection conn = getConnection();
+        Statement retrieveStatement = conn.createStatement();
+        
+        String query = "SELECT * FROM produtos ORDER BY idProduto DESC";
+        ResultSet colunas = retrieveStatement.executeQuery(query);
+        
+        while(table_produtos.getRowCount() > 0) 
+        {
+            ((DefaultTableModel) table_produtos.getModel()).removeRow(0);
+        }
+
+        int columns = colunas.getMetaData().getColumnCount();
+
+        while (colunas.next()) {
+            Object[] row = new Object[columns];
+            for (int i = 1; i <= columns; i++) {
+                row[i - 1] = colunas.getObject(i);
+            }
+            ((DefaultTableModel) table_produtos.getModel()).insertRow(colunas.getRow() - 1, row);
+        }
+        
+        table_produtos.setRowSelectionInterval(0, 0);
+        txt_idProduto.setText(table_produtos.getModel().getValueAt(0, 0).toString());
+    }
+
+    public Connection getConnection() throws SQLException {
         String username = "root", password = "", port = "3306", mydatabase = "admeletronicos", serverName = "localhost", type = "mysql";
 
         Connection conn;
-        boolean responseH;
 
         String url = "jdbc:" + type + "://" + serverName + ":" + port + "/" + mydatabase;
         try {
             conn = (Connection) DriverManager.getConnection(url, username, password);
-            responseH = true;
             System.out.println("Conectado com sucesso ao Banco de Dados");
+            return conn;
+        } catch (SQLException e) {
+            System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
+            return null;
+        }
+    }
+
+    public ResultSet retrieveDB(String table, String select, String where, String otherOptions, int limit) throws SQLException {
+        if (table == null) {
+            table = "produtos";
+        }
+
+        if (select == null) {
+            select = "*";
+        }
+
+        if (where != null) {
+            where = "WHERE " + where;
+        } else {
+            where = "";
+        }
+
+        if (otherOptions == null) {
+            otherOptions = "";
+        }
+
+        String formatedLimit = "";
+
+        if (limit != 0) {
+            formatedLimit = "LIMIT " + Integer.toString(limit);
+        }
+
+        String query = "SELECT " + select + " FROM " + table + " " + where + " " + otherOptions + " " + formatedLimit;
+
+        System.out.println(query);
+
+        try {
+            Connection conn = getConnection();
+            Statement querySearch = conn.createStatement();
+            ResultSet result = querySearch.executeQuery(query);
+
+            return result;
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return null;
+        }
+    }
+
+    public boolean insertDB(String table, String columns, String[] objeto) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values = null;
+
+//        for (int i = 0; i < objeto.length; i++) {;
+//            values = values + objeto[i];
+//        }
+        values = String.join("', '", objeto);
+
+        String query = "INSERT INTO " + table + " (" + columns + ") VALUES ('" + values + "');";
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+
+    }
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            Connection conn = null;
+            conn = getConnection();
 
             // Query para buscar os Produtos no banco.
             // Também relacionamos o ID de Fornecedor e ID de Categoria
             // com seus respectivos nomes nas tabelas Fornecedores e Categorias
-            String produtosQuery = "SELECT produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto FROM produtos JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria";
-
-            // Query para buscar as Categorias no banco.
-            // Aqui queremos apenas o nome de cada Categoria
-            String categoriasQuery = "SELECT nomeCategoria FROM categorias";
-
-            // Criar um Statement para trabalhar com MySQL
-            Statement statement = conn.createStatement();
+            String selectProdutos = "produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto";
+            String optionsProdutos = "JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria ORDER BY idProduto DESC";
 
             // Executar a Query dos Produtos e armazenar os resultados em um ResultSet
-            ResultSet result = statement.executeQuery(produtosQuery);
+            ResultSet result = retrieveDB("produtos", selectProdutos, null, optionsProdutos, 0);
 
             int columns = result.getMetaData().getColumnCount();
 
@@ -370,28 +518,37 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
 //            }
 
-            System.out.println("Valores: ");
-
-            result = statement.executeQuery(categoriasQuery);
+            result = retrieveDB("categorias", "nomeCategoria", null, " ORDER BY idCategoria ASC", 0);
 
             columns = result.getMetaData().getColumnCount();
 
             combo_categorias.removeAllItems();
-            
+            combo_categorias.addItem("Selecione uma Categoria");
+
             while (result.next()) {
-                Object[] row = new Object[columns];
                 for (int i = 1; i <= columns; i++) {
                     combo_categorias.addItem(result.getObject(i).toString());
                 }
-                
             }
 
-            statement.close();
+            result = retrieveDB("fornecedores", "nomeFornecedor", null, " ORDER BY idFornecedor ASC", 0);
 
-        } catch (SQLException e) {
-            System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
-            responseH = false;
+            columns = result.getMetaData().getColumnCount();
+
+            combo_fornecedores.removeAllItems();
+            combo_fornecedores.addItem("Selecione um Fornecedor");
+
+            while (result.next()) {
+                for (int i = 1; i <= columns; i++) {
+                    combo_fornecedores.addItem(result.getObject(i).toString());
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(cadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+
     }//GEN-LAST:event_formWindowOpened
 
     private void table_produtosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_produtosMouseClicked
@@ -410,9 +567,9 @@ public class cadastroProdutos extends javax.swing.JFrame {
 
             txt_idProduto.setText(produto[0]);
             txt_nome.setText(produto[1]);
-            
+            combo_categorias.setSelectedItem(produto[2]);
             txt_quantidade.setText(produto[3]);
-            txt_fornecedor.setText(produto[4]);
+            combo_fornecedores.setSelectedItem(produto[4]);
             txt_valor.setText(produto[5]);
         }
     }//GEN-LAST:event_table_produtosMouseClicked
@@ -423,7 +580,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
         txt_nome.setText(null);
 
         txt_quantidade.setText(null);
-        txt_fornecedor.setText(null);
+        combo_fornecedores.setSelectedItem("Selecione um Fornecedor");
         txt_valor.setText(null);
     }//GEN-LAST:event_btn_limparMouseClicked
 
@@ -432,6 +589,10 @@ public class cadastroProdutos extends javax.swing.JFrame {
         System.out.println(Integer.toString(combo));
 
     }//GEN-LAST:event_combo_categoriasActionPerformed
+
+    private void combo_fornecedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_fornecedoresActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_combo_fornecedoresActionPerformed
 
     /**
      * @param args the command line arguments
@@ -474,6 +635,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private javax.swing.JButton btn_excluir;
     private javax.swing.JButton btn_limpar;
     private javax.swing.JComboBox<String> combo_categorias;
+    private javax.swing.JComboBox<String> combo_fornecedores;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -486,7 +648,6 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable table_produtos;
-    private javax.swing.JTextField txt_fornecedor;
     private javax.swing.JTextField txt_idProduto;
     private javax.swing.JTextField txt_nome;
     private javax.swing.JTextField txt_quantidade;
