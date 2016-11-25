@@ -45,6 +45,8 @@ public class CadastroCategorias extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         area_descricaoCat = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
+        txt_idCat = new javax.swing.JTextField();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -67,7 +69,7 @@ public class CadastroCategorias extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Cadastrar, Editar ou Excluir Fornecedores");
+        jLabel1.setText("Cadastrar, Editar ou Excluir Categorias");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -123,10 +125,25 @@ public class CadastroCategorias extends javax.swing.JFrame {
         btn_limparCat.setText("Limpar e Desselecionar");
 
         btn_excluirCat.setText("Excluir");
+        btn_excluirCat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_excluirCatActionPerformed(evt);
+            }
+        });
 
         btn_atualizarCat.setText("Atualizar");
+        btn_atualizarCat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_atualizarCatActionPerformed(evt);
+            }
+        });
 
         btn_cadastrarCat.setText("Cadastrar");
+        btn_cadastrarCat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cadastrarCatActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -167,6 +184,13 @@ public class CadastroCategorias extends javax.swing.JFrame {
         area_descricaoCat.setRows(5);
         jScrollPane3.setViewportView(area_descricaoCat);
 
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jLabel3.setText("ID:");
+
+        txt_idCat.setEditable(false);
+        txt_idCat.setBackground(new java.awt.Color(204, 204, 204));
+        txt_idCat.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -175,15 +199,21 @@ public class CadastroCategorias extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_nomeCat))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_nomeCat, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txt_idCat)))
+                        .addContainerGap())
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,8 +221,10 @@ public class CadastroCategorias extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txt_nomeCat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(txt_nomeCat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txt_idCat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -229,8 +261,51 @@ public class CadastroCategorias extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        getAccessibleContext().setAccessibleName("Categorias");
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_cadastrarCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cadastrarCatActionPerformed
+        String nomeCategoria = "", descricaoCategoria = "";
+        
+        if (! txt_nomeCat.getText().toString().equals(null)) {
+            nomeCategoria = txt_nomeCat.getText().toString();
+        }
+        
+        if (! area_descricaoCat.getText().toString().equals(null)) {
+            descricaoCategoria = area_descricaoCat.getText().toString();
+        }
+        
+        //Inserir no banco
+        
+    }//GEN-LAST:event_btn_cadastrarCatActionPerformed
+
+    private void btn_atualizarCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarCatActionPerformed
+        String nomeCategoria = "", descricaoCategoria = "";
+        
+        if (! txt_nomeCat.getText().toString().equals(null)) {
+            nomeCategoria = txt_nomeCat.getText().toString();
+        }
+        
+        if (! area_descricaoCat.getText().toString().equals(null)) {
+            descricaoCategoria = area_descricaoCat.getText().toString();
+        }
+        
+        //Atualizar no Banco
+        
+    }//GEN-LAST:event_btn_atualizarCatActionPerformed
+
+    private void btn_excluirCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirCatActionPerformed
+        int idCategoria = 0;
+        
+        if (! txt_idCat.getText().toString().equals(null)) {
+            idCategoria = Integer.valueOf(txt_idCat.getText());
+        }
+        
+        //Excluir
+        
+    }//GEN-LAST:event_btn_excluirCatActionPerformed
 
     /**
      * @param args the command line arguments
@@ -278,6 +353,7 @@ public class CadastroCategorias extends javax.swing.JFrame {
     private javax.swing.JButton btn_limparCat;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -288,6 +364,7 @@ public class CadastroCategorias extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable table_categorias;
+    private javax.swing.JTextField txt_idCat;
     private javax.swing.JTextField txt_nomeCat;
     // End of variables declaration//GEN-END:variables
 }

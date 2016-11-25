@@ -5,6 +5,16 @@
  */
 package admeletronicos;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Desenvolvimento
@@ -43,11 +53,13 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         txt_cnpjForn = new javax.swing.JFormattedTextField();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        table_fornecedores = new javax.swing.JTable();
         btn_cadastrarForn = new javax.swing.JButton();
         btn_atualizarForn = new javax.swing.JButton();
         btn_excluirForn = new javax.swing.JButton();
         btn_limparForn = new javax.swing.JButton();
+        txt_idForn = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -66,6 +78,11 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         setTitle("Fornecedores");
         setResizable(false);
         setType(java.awt.Window.Type.UTILITY);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
@@ -112,7 +129,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         txt_cnpjForn.setText("00.000.000/0000-00"); // NOI18N
         txt_cnpjForn.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        table_fornecedores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -135,14 +152,19 @@ public class CadastroFornecedores extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setResizable(false);
-            jTable2.getColumnModel().getColumn(0).setPreferredWidth(30);
-            jTable2.getColumnModel().getColumn(1).setResizable(false);
-            jTable2.getColumnModel().getColumn(2).setResizable(false);
-            jTable2.getColumnModel().getColumn(3).setResizable(false);
-            jTable2.getColumnModel().getColumn(4).setResizable(false);
+        table_fornecedores.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_fornecedoresMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(table_fornecedores);
+        if (table_fornecedores.getColumnModel().getColumnCount() > 0) {
+            table_fornecedores.getColumnModel().getColumn(0).setResizable(false);
+            table_fornecedores.getColumnModel().getColumn(0).setPreferredWidth(30);
+            table_fornecedores.getColumnModel().getColumn(1).setResizable(false);
+            table_fornecedores.getColumnModel().getColumn(2).setResizable(false);
+            table_fornecedores.getColumnModel().getColumn(3).setResizable(false);
+            table_fornecedores.getColumnModel().getColumn(4).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -161,12 +183,39 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         );
 
         btn_cadastrarForn.setText("Cadastrar");
+        btn_cadastrarForn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cadastrarFornActionPerformed(evt);
+            }
+        });
 
         btn_atualizarForn.setText("Atualizar");
+        btn_atualizarForn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_atualizarFornActionPerformed(evt);
+            }
+        });
 
         btn_excluirForn.setText("Excluir");
+        btn_excluirForn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_excluirFornActionPerformed(evt);
+            }
+        });
 
         btn_limparForn.setText("Limpar e Desselecionar");
+        btn_limparForn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_limparFornMouseClicked(evt);
+            }
+        });
+
+        txt_idForn.setEditable(false);
+        txt_idForn.setBackground(new java.awt.Color(204, 204, 204));
+        txt_idForn.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
+        jLabel7.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jLabel7.setText("ID:");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -176,10 +225,6 @@ public class CadastroFornecedores extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_nomeForn))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -200,7 +245,15 @@ public class CadastroFornecedores extends javax.swing.JFrame {
                         .addComponent(btn_excluirForn, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btn_limparForn, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_nomeForn, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txt_idForn)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -209,7 +262,10 @@ public class CadastroFornecedores extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txt_nomeForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_nomeForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel7)
+                        .addComponent(txt_idForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -261,6 +317,308 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public Connection getConnection() throws SQLException {
+        String username = "root", password = "", port = "3306", mydatabase = "admeletronicos", serverName = "localhost", type = "mysql";
+
+        Connection conn;
+
+        String url = "jdbc:" + type + "://" + serverName + ":" + port + "/" + mydatabase;
+        try {
+            conn = (Connection) DriverManager.getConnection(url, username, password);
+            System.out.println("Conectado com sucesso ao Banco de Dados");
+            return conn;
+        } catch (SQLException e) {
+            System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
+            return null;
+        }
+    }
+
+    public ResultSet retrieveDB(String table, String select, String where, String otherOptions, int limit) throws SQLException {
+        if (table == null) {
+            table = "fornecedores";
+        }
+
+        if (select == null) {
+            select = "*";
+        }
+
+        if (where != null) {
+            where = "WHERE " + where;
+        } else {
+            where = "";
+        }
+
+        if (otherOptions == null) {
+            otherOptions = "";
+        }
+
+        String formatedLimit = "";
+
+        if (limit != 0) {
+            formatedLimit = "LIMIT " + Integer.toString(limit);
+        }
+
+        String query = "SELECT " + select + " FROM " + table + " " + where + " " + otherOptions + " " + formatedLimit;
+
+        System.out.println(query);
+
+        try {
+            Connection conn = getConnection();
+            Statement querySearch = conn.createStatement();
+            ResultSet result = querySearch.executeQuery(query);
+
+            return result;
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return null;
+        }
+    }
+
+    public boolean deleteDB(String table, String where) throws SQLException {
+        try {
+            String query = "DELETE FROM " + table + " WHERE " + where;
+            Connection conn = getConnection();
+            Statement deleteSt = conn.createStatement();
+
+            deleteSt.execute(query);
+
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return false;
+        }
+    }
+
+    public boolean updateDB(String table, String[] columns, String[] objeto, String where) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values = null;
+
+        String sets = "";
+
+        for (int i = 0; i < columns.length; i++) {
+            if (sets.equals("")) {
+                sets = "`" + columns[i] + "` = '" + objeto[i] + "'";
+            } else {
+                sets = sets + ", `" + columns[i] + "` = '" + objeto[i] + "'";
+            }
+        }
+
+        String query = "UPDATE " + table + " SET " + sets + " WHERE " + where;
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+    }
+
+    public boolean insertDB(String table, String[] keys, String[] objeto) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values = null;
+        String columns = String.join("`, `", keys);
+
+        values = String.join("', '", objeto);
+
+        String query = "INSERT INTO " + table + " (`" + columns + "`) VALUES ('" + values + "');";
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+
+    }
+
+    public void updateFornecedores() throws SQLException {
+        Connection conn = getConnection();
+        Statement retrieveStatement = conn.createStatement();
+
+        String query = "SELECT * FROM fornecedores ORDER BY idFornecedor DESC";
+        ResultSet colunas = retrieveStatement.executeQuery(query);
+
+        while (table_fornecedores.getRowCount() > 0) {
+            ((DefaultTableModel) table_fornecedores.getModel()).removeRow(0);
+        }
+
+        int columns = colunas.getMetaData().getColumnCount();
+
+        while (colunas.next()) {
+            Object[] row = new Object[columns];
+            for (int i = 1; i <= columns; i++) {
+                row[i - 1] = colunas.getObject(i);
+            }
+            ((DefaultTableModel) table_fornecedores.getModel()).insertRow(colunas.getRow() - 1, row);
+        }
+
+        table_fornecedores.setRowSelectionInterval(0, 0);
+        txt_idForn.setText(table_fornecedores.getModel().getValueAt(0, 0).toString());
+        btn_atualizarForn.setEnabled(true);
+        btn_excluirForn.setEnabled(true);
+        btn_cadastrarForn.setEnabled(false);
+    }
+
+    private void btn_cadastrarFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cadastrarFornActionPerformed
+        //Inserir no Banco
+        try {
+            String nomeFornecedor = "", enderecoFornecedor = "", telefoneFornecedor = "", cnpjFornecedor = "";
+
+            if (!txt_nomeForn.getText().toString().equals(null)) {
+                nomeFornecedor = txt_nomeForn.getText().toString();
+            }
+
+            if (!txt_enderecoForn.getText().toString().equals(null)) {
+                enderecoFornecedor = txt_enderecoForn.getText().toString();
+            }
+
+            if (!txt_telefoneForn.getText().toString().equals(null)) {
+                telefoneFornecedor = txt_telefoneForn.getText().toString();
+            }
+
+            if (!txt_cnpjForn.getText().toString().equals(null)) {
+                cnpjFornecedor = txt_cnpjForn.getText().toString();
+            }
+
+            String[] fornecedor = new String[4];
+            String[] keys = {"nomeFornecedor", "cnpjFornecedor", "telefoneFornecedor", "enderecoFornecedor"};
+
+            fornecedor[0] = nomeFornecedor;
+            fornecedor[1] = cnpjFornecedor;
+            fornecedor[2] = telefoneFornecedor;
+            fornecedor[3] = enderecoFornecedor;
+
+            boolean resultInsert = insertDB("fornecedores", keys, fornecedor);
+
+            if (resultInsert) {
+                updateFornecedores();
+            }
+
+//            String queryCategoria = "SELECT idCategoria FROM categorias WHERE nomeCategoria = " + nomeCategoria + " LIMIT 1";
+            // Executar a Query das Categorias e armazenar os resultados em um ResultSet
+            //System.out.println("Nome: " + nomeProduto);
+            //System.out.println("Fornecedor: " + nomeFornecedor);
+            //System.out.println("Quantia: " + String.valueOf(quantiaProduto));
+            //System.out.println("Valor: " + String.valueOf(valorProduto));
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+
+    }//GEN-LAST:event_btn_cadastrarFornActionPerformed
+
+    private void btn_atualizarFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarFornActionPerformed
+        String nomeFornecedor = "", enderecoFornecedor = "", telefoneFornecedor = "", cnpjFornecedor = "";
+
+        if (!txt_nomeForn.getText().toString().equals(null)) {
+            nomeFornecedor = txt_nomeForn.getText().toString();
+        }
+
+        if (!txt_enderecoForn.getText().toString().equals(null)) {
+            enderecoFornecedor = txt_enderecoForn.getText().toString();
+        }
+
+        if (!txt_telefoneForn.getText().toString().equals(null)) {
+            telefoneFornecedor = txt_telefoneForn.getText().toString();
+        }
+
+        if (!txt_cnpjForn.getText().toString().equals(null)) {
+            cnpjFornecedor = txt_cnpjForn.getText().toString();
+        }
+
+        //Atualizar no Banco
+
+    }//GEN-LAST:event_btn_atualizarFornActionPerformed
+
+    private void btn_excluirFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirFornActionPerformed
+        int idFornecedor = 0;
+
+        if (!txt_idForn.getText().toString().equals(null)) {
+            idFornecedor = Integer.valueOf(txt_idForn.getText().toString());
+        }
+
+        //Excluir
+
+    }//GEN-LAST:event_btn_excluirFornActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            String selectProdutos = "idFornecedor, nomeFornecedor, telefoneFornecedor, enderecoFornecedor, cnpjFornecedor";
+
+            ResultSet result = retrieveDB("fornecedores", selectProdutos, null, " ORDER BY idFornecedor ASC", 0);
+
+            int columns = result.getMetaData().getColumnCount();
+
+            while (result.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 1; i <= columns; i++) {
+                    row[i - 1] = result.getObject(i);
+                }
+                ((DefaultTableModel) table_fornecedores.getModel()).insertRow(result.getRow() - 1, row);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    private void table_fornecedoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_fornecedoresMouseClicked
+        int row = table_fornecedores.getSelectedRow();
+        TableModel model = table_fornecedores.getModel();
+
+        String[] produto = new String[5];
+
+        if (!model.getValueAt(row, 0).toString().equals("")) {
+            produto[0] = model.getValueAt(row, 0).toString();
+            produto[1] = model.getValueAt(row, 1).toString();
+            produto[2] = model.getValueAt(row, 2).toString();
+            produto[3] = model.getValueAt(row, 3).toString();
+            produto[4] = model.getValueAt(row, 4).toString();
+
+            txt_idForn.setText(produto[0]);
+            txt_nomeForn.setText(produto[1]);
+            txt_telefoneForn.setText(produto[2]);
+            txt_enderecoForn.setText(produto[3]);
+            txt_cnpjForn.setText(produto[4]);
+            btn_atualizarForn.setEnabled(true);
+            btn_excluirForn.setEnabled(true);
+            btn_cadastrarForn.setEnabled(false);
+        }
+    }//GEN-LAST:event_table_fornecedoresMouseClicked
+
+    private void btn_limparFornMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_limparFornMouseClicked
+        table_fornecedores.clearSelection();
+        txt_idForn.setText(null);
+        txt_nomeForn.setText(null);
+        txt_enderecoForn.setText(null);
+        txt_telefoneForn.setText(null);
+        txt_cnpjForn.setText(null);
+        btn_atualizarForn.setEnabled(false);
+        btn_excluirForn.setEnabled(false);
+        btn_cadastrarForn.setEnabled(true);
+    }//GEN-LAST:event_btn_limparFornMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -309,6 +667,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -316,9 +675,10 @@ public class CadastroFornecedores extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable table_fornecedores;
     private javax.swing.JFormattedTextField txt_cnpjForn;
     private javax.swing.JTextField txt_enderecoForn;
+    private javax.swing.JTextField txt_idForn;
     private javax.swing.JTextField txt_nomeForn;
     private javax.swing.JTextField txt_telefoneForn;
     // End of variables declaration//GEN-END:variables
