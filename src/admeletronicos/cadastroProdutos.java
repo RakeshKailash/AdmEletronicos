@@ -122,6 +122,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
         });
 
         combo_categorias.setMaximumRowCount(20);
+        combo_categorias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione uma Categoria" }));
         combo_categorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 combo_categoriasActionPerformed(evt);
@@ -369,18 +370,20 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
 //            }
 
+            System.out.println("Valores: ");
+
             result = statement.executeQuery(categoriasQuery);
 
             columns = result.getMetaData().getColumnCount();
 
             combo_categorias.removeAllItems();
-
+            
             while (result.next()) {
                 Object[] row = new Object[columns];
                 for (int i = 1; i <= columns; i++) {
-                    row[i - 1] = result.getObject(i);
+                    combo_categorias.addItem(result.getObject(i).toString());
                 }
-                combo_categorias.addItem(row[result.getRow() - 1].toString());
+                
             }
 
             statement.close();
