@@ -17,12 +17,12 @@ import javax.swing.table.TableModel;
  *
  * @author Marcelo
  */
-public class cadastroProdutos extends javax.swing.JFrame {
+public class CadastroProdutos extends javax.swing.JFrame {
 
     /**
      * Creates new form cadastroProdutos
      */
-    public cadastroProdutos() {
+    public CadastroProdutos() {
         initComponents();
     }
 
@@ -53,6 +53,8 @@ public class cadastroProdutos extends javax.swing.JFrame {
         btn_limpar = new javax.swing.JButton();
         combo_categorias = new javax.swing.JComboBox<>();
         combo_fornecedores = new javax.swing.JComboBox<>();
+        btn_novoFornecedor = new javax.swing.JButton();
+        btn_novaCategoria = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_produtos = new javax.swing.JTable();
@@ -90,7 +92,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(51, 51, 51));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Cadastrar Produtos");
+        jLabel7.setText("Cadastrar, Editar ou Excluir Produtos");
 
         btn_cadastrar.setText("Cadastrar");
         btn_cadastrar.addActionListener(new java.awt.event.ActionListener() {
@@ -100,6 +102,12 @@ public class cadastroProdutos extends javax.swing.JFrame {
         });
 
         btn_excluir.setText("Excluir");
+        btn_excluir.setEnabled(false);
+        btn_excluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_excluirActionPerformed(evt);
+            }
+        });
 
         txt_idProduto.setEditable(false);
         txt_idProduto.setBackground(new java.awt.Color(204, 204, 204));
@@ -113,10 +121,15 @@ public class cadastroProdutos extends javax.swing.JFrame {
         jLabel6.setText("Categoria:");
 
         btn_atualizar.setText("Atualizar Registro");
-        btn_atualizar.setToolTipText("");
         btn_atualizar.setEnabled(false);
+        btn_atualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_atualizarActionPerformed(evt);
+            }
+        });
 
-        btn_limpar.setText("Limpar Campos");
+        btn_limpar.setText("Limpar e Desselecionar");
+        btn_limpar.setToolTipText("");
         btn_limpar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btn_limparMouseClicked(evt);
@@ -125,17 +138,26 @@ public class cadastroProdutos extends javax.swing.JFrame {
 
         combo_categorias.setMaximumRowCount(20);
         combo_categorias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione uma Categoria" }));
-        combo_categorias.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                combo_categoriasActionPerformed(evt);
-            }
-        });
 
         combo_fornecedores.setMaximumRowCount(20);
         combo_fornecedores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione um Fornecedor" }));
-        combo_fornecedores.addActionListener(new java.awt.event.ActionListener() {
+
+        btn_novoFornecedor.setBackground(new java.awt.Color(255, 255, 255));
+        btn_novoFornecedor.setText("Novo Fornecedor");
+        btn_novoFornecedor.setBorderPainted(false);
+        btn_novoFornecedor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                combo_fornecedoresActionPerformed(evt);
+                btn_novoFornecedorActionPerformed(evt);
+            }
+        });
+
+        btn_novaCategoria.setBackground(new java.awt.Color(255, 255, 255));
+        btn_novaCategoria.setText("Nova Categoria");
+        btn_novaCategoria.setActionCommand("Nova");
+        btn_novaCategoria.setBorderPainted(false);
+        btn_novaCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_novaCategoriaActionPerformed(evt);
             }
         });
 
@@ -149,11 +171,13 @@ public class cadastroProdutos extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 18, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(combo_fornecedores, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(164, 164, 164))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_novoFornecedor)
+                                .addGap(85, 85, 85))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -176,14 +200,16 @@ public class cadastroProdutos extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btn_excluir, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btn_limpar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_limpar, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_novaCategoria))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -210,11 +236,13 @@ public class cadastroProdutos extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txt_valor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(combo_fornecedores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(combo_fornecedores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_novoFornecedor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(combo_categorias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_novaCategoria))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -277,7 +305,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Produtos Cadastrados");
+        jLabel1.setText("Visualizar Produtos Cadastrados");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -354,6 +382,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
 
             String[] produto = new String[5];
+            String[] keys = {"nomeProduto", "idCategoria", "quantiaProduto", "idFornecedor", "valorProduto"};
 
             produto[0] = nomeProduto;
             produto[1] = Integer.toString(idCategoria);
@@ -361,7 +390,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
             produto[3] = Integer.toString(idFornecedor);
             produto[4] = Double.toString(valorProduto);
 
-            boolean resultInsert = insertDB("produtos", "`nomeProduto`, `idCategoria`, `quantiaProduto`, `idFornecedor`, `valorProduto`", produto);
+            boolean resultInsert = insertDB("produtos", keys, produto);
 
             if (resultInsert) {
                 updateProdutos();
@@ -374,7 +403,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
             //System.out.println("Quantia: " + String.valueOf(quantiaProduto));
             //System.out.println("Valor: " + String.valueOf(valorProduto));
         } catch (SQLException e) {
-
+            System.out.println("Erro: " + e);
         }
 
     }//GEN-LAST:event_btn_cadastrarActionPerformed
@@ -382,12 +411,11 @@ public class cadastroProdutos extends javax.swing.JFrame {
     public void updateProdutos() throws SQLException {
         Connection conn = getConnection();
         Statement retrieveStatement = conn.createStatement();
-        
+
         String query = "SELECT * FROM produtos ORDER BY idProduto DESC";
         ResultSet colunas = retrieveStatement.executeQuery(query);
-        
-        while(table_produtos.getRowCount() > 0) 
-        {
+
+        while (table_produtos.getRowCount() > 0) {
             ((DefaultTableModel) table_produtos.getModel()).removeRow(0);
         }
 
@@ -400,9 +428,12 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
             ((DefaultTableModel) table_produtos.getModel()).insertRow(colunas.getRow() - 1, row);
         }
-        
+
         table_produtos.setRowSelectionInterval(0, 0);
         txt_idProduto.setText(table_produtos.getModel().getValueAt(0, 0).toString());
+        btn_atualizar.setEnabled(true);
+        btn_excluir.setEnabled(true);
+        btn_cadastrar.setEnabled(false);
     }
 
     public Connection getConnection() throws SQLException {
@@ -462,19 +493,68 @@ public class cadastroProdutos extends javax.swing.JFrame {
         }
     }
 
-    public boolean insertDB(String table, String columns, String[] objeto) throws SQLException {
+    public boolean deleteDB (String table, String where) throws SQLException {
+        try {
+            String query = "DELETE FROM " + table + " WHERE " + where;
+            Connection conn = getConnection();
+            Statement deleteSt = conn.createStatement();
+            
+            deleteSt.execute(query);
+            
+            return true;
+            
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return false;
+        }
+    }
+    
+    public boolean updateDB(String table, String[] columns, String[] objeto, String where) throws SQLException {
         if (objeto == null) {
             return false;
         }
 
         String values = null;
 
-//        for (int i = 0; i < objeto.length; i++) {;
-//            values = values + objeto[i];
-//        }
+        String sets = "";
+
+        for (int i = 0; i < columns.length; i++) {
+            if (sets.equals("")) {
+                sets = "`" + columns[i] + "` = '" + objeto[i] + "'";
+            } else {
+                sets = sets + ", `" + columns[i] + "` = '" + objeto[i] + "'";
+            }
+        }
+
+        String query = "UPDATE " + table + " SET " + sets + " WHERE " + where;
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+    }
+
+    public boolean insertDB(String table, String[] keys, String[] objeto) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values = null;
+        String columns = String.join("`, `", keys);
+
         values = String.join("', '", objeto);
 
-        String query = "INSERT INTO " + table + " (" + columns + ") VALUES ('" + values + "');";
+        String query = "INSERT INTO " + table + " (`" + columns + "`) VALUES ('" + values + "');";
 
         System.out.println("Inserir: " + query);
 
@@ -545,7 +625,7 @@ public class cadastroProdutos extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(cadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
 
@@ -571,6 +651,9 @@ public class cadastroProdutos extends javax.swing.JFrame {
             txt_quantidade.setText(produto[3]);
             combo_fornecedores.setSelectedItem(produto[4]);
             txt_valor.setText(produto[5]);
+            btn_atualizar.setEnabled(true);
+            btn_excluir.setEnabled(true);
+            btn_cadastrar.setEnabled(false);
         }
     }//GEN-LAST:event_table_produtosMouseClicked
 
@@ -578,21 +661,102 @@ public class cadastroProdutos extends javax.swing.JFrame {
         table_produtos.clearSelection();
         txt_idProduto.setText(null);
         txt_nome.setText(null);
-
+        combo_categorias.setSelectedItem("Selecione uma Categoria");
         txt_quantidade.setText(null);
         combo_fornecedores.setSelectedItem("Selecione um Fornecedor");
         txt_valor.setText(null);
+        btn_atualizar.setEnabled(false);
+        btn_excluir.setEnabled(false);
+        btn_cadastrar.setEnabled(true);
     }//GEN-LAST:event_btn_limparMouseClicked
 
-    private void combo_categoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_categoriasActionPerformed
-        int combo = combo_categorias.getSelectedIndex();
-        System.out.println(Integer.toString(combo));
+    private void btn_atualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarActionPerformed
+        try {
+            String nomeProduto = null, nomeFornecedor = null, nomeCategoria = null;
+            int quantiaProduto = 0, idFornecedor = 0, idCategoria = 0, idProduto = 0;
+            double valorProduto = 0.00;
+            Connection conn = getConnection();
 
-    }//GEN-LAST:event_combo_categoriasActionPerformed
+            //Atribuição dos valores às variáveis, se o campo correspondente
+            // tiver algum valor preenchido
+            if (!txt_quantidade.getText().isEmpty()) {
+                quantiaProduto = Integer.parseInt(txt_quantidade.getText());
+            }
 
-    private void combo_fornecedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_fornecedoresActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_combo_fornecedoresActionPerformed
+            if (!txt_valor.getText().isEmpty()) {
+                valorProduto = Double.parseDouble(txt_valor.getText());
+            }
+
+            if (!txt_nome.getText().isEmpty()) {
+                nomeProduto = txt_nome.getText();
+            }
+
+            if (!combo_categorias.getSelectedItem().toString().equals("Selecione uma Categoria")) {
+                nomeCategoria = combo_categorias.getSelectedItem().toString();
+                ResultSet result = retrieveDB("categorias", "`idCategoria`", "`nomeCategoria` = '" + nomeCategoria + "'", null, 0);
+                while (result.next()) {
+                    idCategoria = result.getInt("idCategoria");
+                }
+            }
+
+            if (!combo_fornecedores.getSelectedItem().toString().equals("Selecione um Fornecedor")) {
+                nomeFornecedor = combo_fornecedores.getSelectedItem().toString();
+                ResultSet result = retrieveDB("fornecedores", "`idFornecedor`", "`nomeFornecedor` = '" + nomeFornecedor + "'", null, 0);
+                while (result.next()) {
+                    idFornecedor = result.getInt("idFornecedor");
+                }
+            }
+
+            if (!txt_idProduto.getText().toString().equals(null)) {
+                idProduto = Integer.valueOf(txt_idProduto.getText());
+            }
+
+            String[] produto = new String[5];
+            String[] keys = {"nomeProduto", "idCategoria", "quantiaProduto", "idFornecedor", "valorProduto"};
+
+            produto[0] = nomeProduto;
+            produto[1] = Integer.toString(idCategoria);
+            produto[2] = Integer.toString(quantiaProduto);
+            produto[3] = Integer.toString(idFornecedor);
+            produto[4] = Double.toString(valorProduto);
+
+            boolean resultUpdate = updateDB("produtos", keys, produto, "idProduto = " + String.valueOf(idProduto));
+
+            if (resultUpdate) {
+                updateProdutos();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+    }//GEN-LAST:event_btn_atualizarActionPerformed
+
+    private void btn_novoFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novoFornecedorActionPerformed
+        new CadastroFornecedores().setVisible(true);
+    }//GEN-LAST:event_btn_novoFornecedorActionPerformed
+
+    private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
+        int idProduto = 0;
+
+        if (txt_idProduto.getText().toString().equals(null)) {
+            System.out.println("Não é possível excluir um Produto sem informar um ID");
+        } else {
+            try {
+                idProduto = Integer.valueOf(txt_idProduto.getText());
+                boolean resultDelete = deleteDB("produtos", "idProduto = " + idProduto);
+                if (resultDelete) {
+                    updateProdutos();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro: " + e);
+            }
+
+        }
+    }//GEN-LAST:event_btn_excluirActionPerformed
+
+    private void btn_novaCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novaCategoriaActionPerformed
+        new CadastroCategorias().setVisible(true);
+    }//GEN-LAST:event_btn_novaCategoriaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -611,20 +775,21 @@ public class cadastroProdutos extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(cadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(cadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(cadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(cadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new cadastroProdutos().setVisible(true);
+                new CadastroProdutos().setVisible(true);
             }
         });
     }
@@ -634,6 +799,8 @@ public class cadastroProdutos extends javax.swing.JFrame {
     private javax.swing.JButton btn_cadastrar;
     private javax.swing.JButton btn_excluir;
     private javax.swing.JButton btn_limpar;
+    private javax.swing.JButton btn_novaCategoria;
+    private javax.swing.JButton btn_novoFornecedor;
     private javax.swing.JComboBox<String> combo_categorias;
     private javax.swing.JComboBox<String> combo_fornecedores;
     private javax.swing.JLabel jLabel1;
