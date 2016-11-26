@@ -62,6 +62,13 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -408,11 +415,31 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btn_cadastrarActionPerformed
 
+    public void updateFornecedores() throws SQLException {
+        Connection conn = getConnection();
+        Statement retrieveStatement = conn.createStatement();
+
+        String query = "SELECT nomeFornecedor FROM fornecedores ORDER BY idFornecedor DESC";
+        ResultSet colunas = retrieveStatement.executeQuery(query);
+
+        int columns = colunas.getMetaData().getColumnCount();
+
+            combo_fornecedores.removeAllItems();
+            combo_fornecedores.addItem("Selecione um Fornecedor");
+
+            while (colunas.next()) {
+                for (int i = 1; i <= columns; i++) {
+                    combo_fornecedores.addItem(colunas.getObject(i).toString());
+                }
+            }
+
+    }
+
     public void updateProdutos() throws SQLException {
         Connection conn = getConnection();
         Statement retrieveStatement = conn.createStatement();
 
-        String query = "SELECT * FROM produtos ORDER BY idProduto DESC";
+        String query = "SELECT produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto FROM produtos JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria ORDER BY idProduto DESC";
         ResultSet colunas = retrieveStatement.executeQuery(query);
 
         while (table_produtos.getRowCount() > 0) {
@@ -493,22 +520,22 @@ public class CadastroProdutos extends javax.swing.JFrame {
         }
     }
 
-    public boolean deleteDB (String table, String where) throws SQLException {
+    public boolean deleteDB(String table, String where) throws SQLException {
         try {
             String query = "DELETE FROM " + table + " WHERE " + where;
             Connection conn = getConnection();
             Statement deleteSt = conn.createStatement();
-            
+
             deleteSt.execute(query);
-            
+
             return true;
-            
+
         } catch (SQLException e) {
             System.out.println("Erro: " + e);
             return false;
         }
     }
-    
+
     public boolean updateDB(String table, String[] columns, String[] objeto, String where) throws SQLException {
         if (objeto == null) {
             return false;
@@ -757,6 +784,16 @@ public class CadastroProdutos extends javax.swing.JFrame {
     private void btn_novaCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novaCategoriaActionPerformed
         new CadastroCategorias().setVisible(true);
     }//GEN-LAST:event_btn_novaCategoriaActionPerformed
+
+    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        System.out.println("Ó, mecheu!");
+        try {
+            updateProdutos();
+            updateFornecedores();
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+    }//GEN-LAST:event_formWindowGainedFocus
 
     /**
      * @param args the command line arguments
