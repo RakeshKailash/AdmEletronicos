@@ -424,14 +424,34 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
         int columns = colunas.getMetaData().getColumnCount();
 
-            combo_fornecedores.removeAllItems();
-            combo_fornecedores.addItem("Selecione um Fornecedor");
+        combo_fornecedores.removeAllItems();
+        combo_fornecedores.addItem("Selecione um Fornecedor");
 
-            while (colunas.next()) {
-                for (int i = 1; i <= columns; i++) {
-                    combo_fornecedores.addItem(colunas.getObject(i).toString());
-                }
+        while (colunas.next()) {
+            for (int i = 1; i <= columns; i++) {
+                combo_fornecedores.addItem(colunas.getObject(i).toString());
             }
+        }
+
+    }
+
+    public void updateCategorias() throws SQLException {
+        Connection conn = getConnection();
+        Statement retrieveStatement = conn.createStatement();
+
+        String query = "SELECT nomeCategoria FROM categorias ORDER BY idCategoria DESC";
+        ResultSet colunas = retrieveStatement.executeQuery(query);
+
+        int columns = colunas.getMetaData().getColumnCount();
+
+        combo_categorias.removeAllItems();
+        combo_categorias.addItem("Selecione uma Categoria");
+
+        while (colunas.next()) {
+            for (int i = 1; i <= columns; i++) {
+                combo_categorias.addItem(colunas.getObject(i).toString());
+            }
+        }
 
     }
 
@@ -555,8 +575,6 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
         String query = "UPDATE " + table + " SET " + sets + " WHERE " + where;
 
-        System.out.println("Inserir: " + query);
-
         Connection conn = getConnection();
 
         Statement insertSt = conn.createStatement();
@@ -572,7 +590,7 @@ public class CadastroProdutos extends javax.swing.JFrame {
     }
 
     public boolean insertDB(String table, String[] keys, String[] objeto) throws SQLException {
-        if (objeto == null) {
+        if (Arrays.toString(objeto).equals("")) {
             return false;
         }
 
@@ -718,7 +736,7 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 nomeProduto = txt_nome.getText();
             }
 
-            if (!combo_categorias.getSelectedItem().toString().equals("Selecione uma Categoria")) {
+            if (!combo_categorias.getSelectedItem().equals("Selecione uma Categoria")) {
                 nomeCategoria = combo_categorias.getSelectedItem().toString();
                 ResultSet result = retrieveDB("categorias", "`idCategoria`", "`nomeCategoria` = '" + nomeCategoria + "'", null, 0);
                 while (result.next()) {
@@ -726,7 +744,7 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 }
             }
 
-            if (!combo_fornecedores.getSelectedItem().toString().equals("Selecione um Fornecedor")) {
+            if (!combo_fornecedores.getSelectedItem().equals("Selecione um Fornecedor")) {
                 nomeFornecedor = combo_fornecedores.getSelectedItem().toString();
                 ResultSet result = retrieveDB("fornecedores", "`idFornecedor`", "`nomeFornecedor` = '" + nomeFornecedor + "'", null, 0);
                 while (result.next()) {
@@ -734,7 +752,7 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 }
             }
 
-            if (!txt_idProduto.getText().toString().equals(null)) {
+            if (!txt_idProduto.getText().equals("")) {
                 idProduto = Integer.valueOf(txt_idProduto.getText());
             }
 
@@ -765,7 +783,7 @@ public class CadastroProdutos extends javax.swing.JFrame {
     private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
         int idProduto = 0;
 
-        if (txt_idProduto.getText().toString().equals(null)) {
+        if (txt_idProduto.getText().equals("")) {
             System.out.println("Não é possível excluir um Produto sem informar um ID");
         } else {
             try {
@@ -786,10 +804,9 @@ public class CadastroProdutos extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_novaCategoriaActionPerformed
 
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
-        System.out.println("Ó, mecheu!");
         try {
-            updateProdutos();
             updateFornecedores();
+            updateCategorias();
         } catch (SQLException e) {
             System.out.println("Erro: " + e);
         }

@@ -5,6 +5,16 @@
  */
 package admeletronicos;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Desenvolvimento
@@ -65,6 +75,11 @@ public class CadastroCategorias extends javax.swing.JFrame {
         setTitle("Fornecedores");
         setResizable(false);
         setType(java.awt.Window.Type.UTILITY);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
@@ -112,6 +127,11 @@ public class CadastroCategorias extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        table_categorias.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_categoriasMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(table_categorias);
         if (table_categorias.getColumnModel().getColumnCount() > 0) {
             table_categorias.getColumnModel().getColumn(0).setResizable(false);
@@ -123,8 +143,14 @@ public class CadastroCategorias extends javax.swing.JFrame {
         }
 
         btn_limparCat.setText("Limpar e Desselecionar");
+        btn_limparCat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_limparCatActionPerformed(evt);
+            }
+        });
 
         btn_excluirCat.setText("Excluir");
+        btn_excluirCat.setEnabled(false);
         btn_excluirCat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_excluirCatActionPerformed(evt);
@@ -132,6 +158,7 @@ public class CadastroCategorias extends javax.swing.JFrame {
         });
 
         btn_atualizarCat.setText("Atualizar");
+        btn_atualizarCat.setEnabled(false);
         btn_atualizarCat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_atualizarCatActionPerformed(evt);
@@ -266,46 +293,293 @@ public class CadastroCategorias extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public Connection getConnection() throws SQLException {
+        String username = "root", password = "", port = "3306", mydatabase = "admeletronicos", serverName = "localhost", type = "mysql";
+
+        Connection conn;
+
+        String url = "jdbc:" + type + "://" + serverName + ":" + port + "/" + mydatabase;
+        try {
+            conn = (Connection) DriverManager.getConnection(url, username, password);
+            System.out.println("Conectado com sucesso ao Banco de Dados");
+            return conn;
+        } catch (SQLException e) {
+            System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
+            return null;
+        }
+    }
+
+    public ResultSet retrieveDB(String table, String select, String where, String otherOptions, int limit) throws SQLException {
+        if (table == null) {
+            table = "categorias";
+        }
+
+        if (select == null) {
+            select = "*";
+        }
+
+        if (where != null) {
+            where = "WHERE " + where;
+        } else {
+            where = "";
+        }
+
+        if (otherOptions == null) {
+            otherOptions = "";
+        }
+
+        String formatedLimit = "";
+
+        if (limit != 0) {
+            formatedLimit = "LIMIT " + Integer.toString(limit);
+        }
+
+        String query = "SELECT " + select + " FROM " + table + " " + where + " " + otherOptions + " " + formatedLimit;
+
+        System.out.println(query);
+
+        try {
+            Connection conn = getConnection();
+            Statement querySearch = conn.createStatement();
+            ResultSet result = querySearch.executeQuery(query);
+
+            return result;
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return null;
+        }
+    }
+
+    public boolean deleteDB(String table, String where) throws SQLException {
+        try {
+            String query = "DELETE FROM " + table + " WHERE " + where;
+            Connection conn = getConnection();
+            Statement deleteSt = conn.createStatement();
+
+            deleteSt.execute(query);
+
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+            return false;
+        }
+    }
+
+    public boolean updateDB(String table, String[] columns, String[] objeto, String where) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values = null;
+
+        String sets = "";
+
+        for (int i = 0; i < columns.length; i++) {
+            if (sets.equals("")) {
+                sets = "`" + columns[i] + "` = '" + objeto[i] + "'";
+            } else {
+                sets = sets + ", `" + columns[i] + "` = '" + objeto[i] + "'";
+            }
+        }
+
+        String query = "UPDATE " + table + " SET " + sets + " WHERE " + where;
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+    }
+
+    public boolean insertDB(String table, String[] keys, String[] objeto) throws SQLException {
+        if (objeto == null) {
+            return false;
+        }
+
+        String values;
+        String columns = String.join("`, `", keys);
+
+        values = String.join("', '", objeto);
+
+        String query = "INSERT INTO " + table + " (`" + columns + "`) VALUES ('" + values + "');";
+
+        System.out.println("Inserir: " + query);
+
+        Connection conn = getConnection();
+
+        Statement insertSt = conn.createStatement();
+
+        try {
+            insertSt.executeUpdate(query);
+            System.out.println("Item inserido com sucesso!");
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir: " + e);
+            return false;
+        }
+
+    }
+
+    public void updateCategorias() throws SQLException {
+        Connection conn = getConnection();
+        Statement retrieveStatement = conn.createStatement();
+
+        String query = "SELECT * FROM categorias ORDER BY idCategoria DESC";
+        ResultSet colunas = retrieveStatement.executeQuery(query);
+
+        while (table_categorias.getRowCount() > 0) {
+            ((DefaultTableModel) table_categorias.getModel()).removeRow(0);
+        }
+
+        int columns = colunas.getMetaData().getColumnCount();
+
+        while (colunas.next()) {
+            Object[] row = new Object[columns];
+            for (int i = 1; i <= columns; i++) {
+                row[i - 1] = colunas.getObject(i);
+            }
+            ((DefaultTableModel) table_categorias.getModel()).insertRow(colunas.getRow() - 1, row);
+        }
+
+        table_categorias.setRowSelectionInterval(0, 0);
+        txt_idCat.setText(table_categorias.getModel().getValueAt(0, 0).toString());
+        btn_atualizarCat.setEnabled(true);
+        btn_excluirCat.setEnabled(true);
+        btn_cadastrarCat.setEnabled(false);
+    }
+
+
     private void btn_cadastrarCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cadastrarCatActionPerformed
         String nomeCategoria = "", descricaoCategoria = "";
-        
-        if (! txt_nomeCat.getText().toString().equals(null)) {
-            nomeCategoria = txt_nomeCat.getText().toString();
+
+        if (!txt_nomeCat.getText().equals("")) {
+            nomeCategoria = txt_nomeCat.getText();
         }
-        
-        if (! area_descricaoCat.getText().toString().equals(null)) {
-            descricaoCategoria = area_descricaoCat.getText().toString();
+
+        if (!area_descricaoCat.getText().equals("")) {
+            descricaoCategoria = area_descricaoCat.getText();
         }
-        
+
+        String[] values = {nomeCategoria, descricaoCategoria};
+
+        String[] keys = {"nomeCategoria", "descricaoCategoria"};
+
         //Inserir no banco
-        
+        try {
+            insertDB("categorias", keys, values);
+            updateCategorias();
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+
+
     }//GEN-LAST:event_btn_cadastrarCatActionPerformed
 
     private void btn_atualizarCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarCatActionPerformed
         String nomeCategoria = "", descricaoCategoria = "";
-        
-        if (! txt_nomeCat.getText().toString().equals(null)) {
-            nomeCategoria = txt_nomeCat.getText().toString();
+        int idCategoria = 0;
+
+        if (!txt_nomeCat.getText().equals("")) {
+            nomeCategoria = txt_nomeCat.getText();
         }
-        
-        if (! area_descricaoCat.getText().toString().equals(null)) {
-            descricaoCategoria = area_descricaoCat.getText().toString();
+
+        if (!area_descricaoCat.getText().equals("")) {
+            descricaoCategoria = area_descricaoCat.getText();
         }
-        
+
+        if (!txt_idCat.getText().equals("")) {
+            idCategoria = Integer.valueOf(txt_idCat.getText());
+        }
+
+        String[] columns = {"nomeCategoria", "descricaoCategoria"};
+        String[] values = {nomeCategoria, descricaoCategoria};
+
         //Atualizar no Banco
-        
+        try {
+            updateDB("categorias", columns, values, "idCategoria = " + String.valueOf(idCategoria));
+            updateCategorias();
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+
     }//GEN-LAST:event_btn_atualizarCatActionPerformed
 
     private void btn_excluirCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirCatActionPerformed
         int idCategoria = 0;
-        
-        if (! txt_idCat.getText().toString().equals(null)) {
+
+        if (!txt_idCat.getText().equals("")) {
             idCategoria = Integer.valueOf(txt_idCat.getText());
         }
-        
+
         //Excluir
-        
+        try {
+            deleteDB("categorias", "idCategoria = " + String.valueOf(idCategoria));
+            updateCategorias();
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e);
+        }
+
     }//GEN-LAST:event_btn_excluirCatActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            String selectCategorias = "idCategoria, nomeCategoria, descricaoCategoria";
+
+            ResultSet result = retrieveDB("categorias", selectCategorias, null, " ORDER BY idCategoria DESC", 0);
+
+            int columns = result.getMetaData().getColumnCount();
+
+            while (result.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 1; i <= columns; i++) {
+                    row[i - 1] = result.getObject(i);
+                }
+                ((DefaultTableModel) table_categorias.getModel()).insertRow(result.getRow() - 1, row);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    private void table_categoriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_categoriasMouseClicked
+        int row = table_categorias.getSelectedRow();
+        TableModel model = table_categorias.getModel();
+
+        String[] categoria = new String[3];
+
+        if (!model.getValueAt(row, 0).toString().equals("")) {
+            categoria[0] = model.getValueAt(row, 0).toString();
+            categoria[1] = model.getValueAt(row, 1).toString();
+            categoria[2] = model.getValueAt(row, 2).toString();
+
+            txt_idCat.setText(categoria[0]);
+            txt_nomeCat.setText(categoria[1]);
+            area_descricaoCat.setText(categoria[2]);
+            btn_atualizarCat.setEnabled(true);
+            btn_excluirCat.setEnabled(true);
+            btn_cadastrarCat.setEnabled(false);
+        }
+    }//GEN-LAST:event_table_categoriasMouseClicked
+
+    private void btn_limparCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_limparCatActionPerformed
+        table_categorias.clearSelection();
+        txt_idCat.setText(null);
+        txt_nomeCat.setText(null);
+        area_descricaoCat.setText(null);
+        btn_atualizarCat.setEnabled(false);
+        btn_excluirCat.setEnabled(false);
+        btn_cadastrarCat.setEnabled(true);
+    }//GEN-LAST:event_btn_limparCatActionPerformed
 
     /**
      * @param args the command line arguments

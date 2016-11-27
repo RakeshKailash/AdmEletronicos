@@ -190,6 +190,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         });
 
         btn_atualizarForn.setText("Atualizar");
+        btn_atualizarForn.setEnabled(false);
         btn_atualizarForn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_atualizarFornActionPerformed(evt);
@@ -197,6 +198,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         });
 
         btn_excluirForn.setText("Excluir");
+        btn_excluirForn.setEnabled(false);
         btn_excluirForn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_excluirFornActionPerformed(evt);
@@ -260,12 +262,13 @@ public class CadastroFornecedores extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txt_nomeForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel7)
-                        .addComponent(txt_idForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txt_idForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(txt_nomeForn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -430,7 +433,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
             return false;
         }
 
-        String values = null;
+        String values;
         String columns = String.join("`, `", keys);
 
         values = String.join("', '", objeto);
@@ -487,20 +490,20 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         try {
             String nomeFornecedor = "", enderecoFornecedor = "", telefoneFornecedor = "", cnpjFornecedor = "";
 
-            if (!txt_nomeForn.getText().toString().equals(null)) {
-                nomeFornecedor = txt_nomeForn.getText().toString();
+            if (!txt_nomeForn.getText().equals("")) {
+                nomeFornecedor = txt_nomeForn.getText();
             }
 
-            if (!txt_enderecoForn.getText().toString().equals(null)) {
-                enderecoFornecedor = txt_enderecoForn.getText().toString();
+            if (!txt_enderecoForn.getText().equals("")) {
+                enderecoFornecedor = txt_enderecoForn.getText();
             }
 
-            if (!txt_telefoneForn.getText().toString().equals(null)) {
-                telefoneFornecedor = txt_telefoneForn.getText().toString();
+            if (!txt_telefoneForn.getText().equals("")) {
+                telefoneFornecedor = txt_telefoneForn.getText();
             }
 
-            if (!txt_cnpjForn.getText().toString().equals(null)) {
-                cnpjFornecedor = txt_cnpjForn.getText().toString();
+            if (!txt_cnpjForn.getText().equals("")) {
+                cnpjFornecedor = txt_cnpjForn.getText();
             }
 
             String[] fornecedor = new String[4];
@@ -532,20 +535,20 @@ public class CadastroFornecedores extends javax.swing.JFrame {
     private void btn_atualizarFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarFornActionPerformed
         String nomeFornecedor = "", enderecoFornecedor = "", telefoneFornecedor = "", cnpjFornecedor = "";
 
-        if (!txt_nomeForn.getText().toString().equals(null)) {
-            nomeFornecedor = txt_nomeForn.getText().toString();
+        if (!txt_nomeForn.getText().equals("")) {
+            nomeFornecedor = txt_nomeForn.getText();
         }
 
-        if (!txt_enderecoForn.getText().toString().equals(null)) {
-            enderecoFornecedor = txt_enderecoForn.getText().toString();
+        if (!txt_enderecoForn.getText().equals("")) {
+            enderecoFornecedor = txt_enderecoForn.getText();
         }
 
-        if (!txt_telefoneForn.getText().toString().equals(null)) {
-            telefoneFornecedor = txt_telefoneForn.getText().toString();
+        if (!txt_telefoneForn.getText().equals("")) {
+            telefoneFornecedor = txt_telefoneForn.getText();
         }
 
-        if (!txt_cnpjForn.getText().toString().equals(null)) {
-            cnpjFornecedor = txt_cnpjForn.getText().toString();
+        if (!txt_cnpjForn.getText().equals("")) {
+            cnpjFornecedor = txt_cnpjForn.getText();
         }
 
         //Atualizar no Banco
@@ -555,8 +558,8 @@ public class CadastroFornecedores extends javax.swing.JFrame {
     private void btn_excluirFornActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirFornActionPerformed
         int idFornecedor = 0;
 
-        if (!txt_idForn.getText().toString().equals(null)) {
-            idFornecedor = Integer.valueOf(txt_idForn.getText().toString());
+        if (!txt_idForn.getText().equals("")) {
+            idFornecedor = Integer.valueOf(txt_idForn.getText());
         }
 
         //Excluir
@@ -567,7 +570,7 @@ public class CadastroFornecedores extends javax.swing.JFrame {
         try {
             String selectProdutos = "idFornecedor, nomeFornecedor, telefoneFornecedor, enderecoFornecedor, cnpjFornecedor";
 
-            ResultSet result = retrieveDB("fornecedores", selectProdutos, null, " ORDER BY idFornecedor ASC", 0);
+            ResultSet result = retrieveDB("fornecedores", selectProdutos, null, " ORDER BY idFornecedor DESC", 0);
 
             int columns = result.getMetaData().getColumnCount();
 
