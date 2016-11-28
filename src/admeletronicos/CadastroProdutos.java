@@ -7,9 +7,6 @@ package admeletronicos;
 
 import java.sql.*;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -349,45 +346,69 @@ public class CadastroProdutos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_cadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cadastrarActionPerformed
-        //Declaração de variáveis para armazenar os valores do 
-        //formulário de cadastro
+        //Abertura de um Bloco de Try, para tratar quaisquer erros que apareçam
+        // no estabelecimento da conexão ou nas operações de SQL contidas aqui
         try {
+            //Declaração de variáveis para armazenar os valores do 
+            //formulário de cadastro
             String nomeProduto = null, nomeFornecedor = null, nomeCategoria = null;
             int quantiaProduto = 0, idFornecedor = 0, idCategoria = 0;
             double valorProduto = 0.00;
+
+            //Declaração de uma variável dot tipo Connection, que irá conter a
+            // conexão retornada pela função getConnection()
             Connection conn = getConnection();
 
             //Atribuição dos valores às variáveis, se o campo correspondente
             // tiver algum valor preenchido
+            //Quantidade do Produto
             if (!txt_quantidade.getText().isEmpty()) {
                 quantiaProduto = Integer.parseInt(txt_quantidade.getText());
             }
 
+            //Valor Unitário do Produto
             if (!txt_valor.getText().isEmpty()) {
                 valorProduto = Double.parseDouble(txt_valor.getText());
             }
 
+            //Nome do Produto
             if (!txt_nome.getText().isEmpty()) {
                 nomeProduto = txt_nome.getText();
             }
 
+            //Antes de determinar a Categoria selecionada, verificar se o item
+            // selecionado na Combobox não corresponde à mensagem padrão
+            //'Selecione uma Categoria'
             if (!combo_categorias.getSelectedItem().toString().equals("Selecione uma Categoria")) {
                 nomeCategoria = combo_categorias.getSelectedItem().toString();
-                System.out.println("Chegou aqui");
+                //Utilização da função retrieveDB() para obter o ID da categoria
+                // selecioada, com base no nome resgatado da Combobox
                 ResultSet result = retrieveDB("categorias", "`idCategoria`", "`nomeCategoria` = '" + nomeCategoria + "'", null, 0);
                 while (result.next()) {
+                    //idCategoria definido como o valor de ID obtido através da
+                    // função retrieveDB()
                     idCategoria = result.getInt("idCategoria");
                 }
             }
 
+            //Antes de determinar o Fornecedor selecionado, verificar se o item
+            // selecionado na Combobox não corresponde à mensagem padrão
+            //'Selecione um Fornecedor'
             if (!combo_fornecedores.getSelectedItem().toString().equals("Selecione um Fornecedor")) {
                 nomeFornecedor = combo_fornecedores.getSelectedItem().toString();
+                //Utilização da função retrieveDB() para obter o ID do fornecedor
+                // selecioada, com base no nome resgatado da Combobox
                 ResultSet result = retrieveDB("fornecedores", "`idFornecedor`", "`nomeFornecedor` = '" + nomeFornecedor + "'", null, 0);
                 while (result.next()) {
+                    //idFornecedor definido como o valor de ID obtido através da
+                    // função retrieveDB()
                     idFornecedor = result.getInt("idFornecedor");
                 }
             }
 
+            //Declaração e composição do Array de Strings 'produto', que irá
+            // armazenar as informações a serem inseridas no banco como um novo
+            // produto
             String[] produto = new String[5];
             String[] keys = {"nomeProduto", "idCategoria", "quantiaProduto", "idFornecedor", "valorProduto"};
 
@@ -397,37 +418,50 @@ public class CadastroProdutos extends javax.swing.JFrame {
             produto[3] = Integer.toString(idFornecedor);
             produto[4] = Double.toString(valorProduto);
 
+            //Declaração e atribuição de uma variável para armazenar o retorno
+            // da função insertDB(), que usamos aqui para inserir um novo produto
             boolean resultInsert = insertDB("produtos", keys, produto);
 
+            //Verificação do retorno:
+            // true = Produto inserido
+            // false = Algo deu errado
             if (resultInsert) {
+                //Caso tudo tenha dado certo, atualizamos a tabela de produtos
+                // para exibir o que acabou de ser inserido
                 updateProdutos();
             }
 
-//            String queryCategoria = "SELECT idCategoria FROM categorias WHERE nomeCategoria = " + nomeCategoria + " LIMIT 1";
-            // Executar a Query das Categorias e armazenar os resultados em um ResultSet
-            //System.out.println("Nome: " + nomeProduto);
-            //System.out.println("Fornecedor: " + nomeFornecedor);
-            //System.out.println("Quantia: " + String.valueOf(quantiaProduto));
-            //System.out.println("Valor: " + String.valueOf(valorProduto));
         } catch (SQLException e) {
+            //Caso dê algum erro na execução do código no bloco Try, o programa
+            // pula para cá e armazena o erro em uma variável 'e', que será
+            // exibida na tela junto da mensagem 'Erro'
             System.out.println("Erro: " + e);
         }
 
     }//GEN-LAST:event_btn_cadastrarActionPerformed
 
+    //Função para atualizar a Combobox de Fornecedores
     public void updateFornecedores() throws SQLException {
+        //Abre coneção e cria um Statement
         Connection conn = getConnection();
         Statement retrieveStatement = conn.createStatement();
 
+        //Compõe uma 'query' (uma série de comandos sql), e armazena o resultado
+        // de sua execução em uma variável 'colunas'
         String query = "SELECT nomeFornecedor FROM fornecedores ORDER BY idFornecedor DESC";
         ResultSet colunas = retrieveStatement.executeQuery(query);
 
+        //Conta o número de resultados obtidos
         int columns = colunas.getMetaData().getColumnCount();
 
+        //Remove todos os itens da Combobox Fornecedores, e em seguida adiciona
+        // a mensagem padrão 'Selecione um Fornecedor'
         combo_fornecedores.removeAllItems();
         combo_fornecedores.addItem("Selecione um Fornecedor");
 
+        //Passa um a um dos resultados obtidos com a query
         while (colunas.next()) {
+            //Utiliza um loop 'for' para adicionar os itens à Combobox
             for (int i = 1; i <= columns; i++) {
                 combo_fornecedores.addItem(colunas.getObject(i).toString());
             }
@@ -435,19 +469,28 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
     }
 
+    //Função para atualizar a Combobox de Categorias
     public void updateCategorias() throws SQLException {
+        //Abre conexão e cria um Statement
         Connection conn = getConnection();
         Statement retrieveStatement = conn.createStatement();
 
+        //Compõe uma query dentro de uma string, e executa suas instruções
         String query = "SELECT nomeCategoria FROM categorias ORDER BY idCategoria DESC";
         ResultSet colunas = retrieveStatement.executeQuery(query);
 
+        //Conta os resultados obtidos
         int columns = colunas.getMetaData().getColumnCount();
 
+        //Remove todos os itens da Combobox Categorias, e adiciona a mensagem
+        // padrão 'Selecione uma Categoria'
         combo_categorias.removeAllItems();
         combo_categorias.addItem("Selecione uma Categoria");
 
+        //Passa por um a um dos resultados obtidos com a query
         while (colunas.next()) {
+            //Usa um loop 'for' para adicionar os itens obtidos à Combobox
+            // Categorias
             for (int i = 1; i <= columns; i++) {
                 combo_categorias.addItem(colunas.getObject(i).toString());
             }
@@ -455,27 +498,38 @@ public class CadastroProdutos extends javax.swing.JFrame {
 
     }
 
+    //Função para atualizar a Tabela de Produtos
     public void updateProdutos() throws SQLException {
+        //Abre conexão a cria um Statement
         Connection conn = getConnection();
         Statement retrieveStatement = conn.createStatement();
 
+        //Compõe uma query dentro de uma string, e executa as instruções
+        // contidas nela, armazenando seu resultado em uma variável
         String query = "SELECT produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto FROM produtos JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria ORDER BY idProduto DESC";
         ResultSet colunas = retrieveStatement.executeQuery(query);
 
+        //Remove todas as linhas da Tabela de produtos, um a um
         while (table_produtos.getRowCount() > 0) {
             ((DefaultTableModel) table_produtos.getModel()).removeRow(0);
         }
 
+        //Conta os resultados obtidos com a query
         int columns = colunas.getMetaData().getColumnCount();
 
+        //Passa por todos os itens obtidos com a query, um a um
         while (colunas.next()) {
+            //Monta um objeto com os resultados prontos para serem usados
             Object[] row = new Object[columns];
             for (int i = 1; i <= columns; i++) {
                 row[i - 1] = colunas.getObject(i);
             }
+            //Utiliza os valores preparados, para preencher a tabela 'table_produtos'
             ((DefaultTableModel) table_produtos.getModel()).insertRow(colunas.getRow() - 1, row);
         }
 
+        //Seleciona a linha mais atual da table_produtos, e configura o txt_idProduto.
+        //Modifica a disponibilidade dos botões de Atualizar, Excluir e Cadastrar
         table_produtos.setRowSelectionInterval(0, 0);
         txt_idProduto.setText(table_produtos.getModel().getValueAt(0, 0).toString());
         btn_atualizar.setEnabled(true);
@@ -483,23 +537,32 @@ public class CadastroProdutos extends javax.swing.JFrame {
         btn_cadastrar.setEnabled(false);
     }
 
+    //Função usada para criar e retornar uma Conexão com o banco de dados MySQL
     public Connection getConnection() throws SQLException {
+        //Declarão e atribuição de variáveis para armazenar as informações necessárias
+        // à conexao com o banco de dados
         String username = "root", password = "", port = "3306", mydatabase = "admeletronicos", serverName = "localhost", type = "mysql";
-
         Connection conn;
-
         String url = "jdbc:" + type + "://" + serverName + ":" + port + "/" + mydatabase;
+
+        //Tenta estabelecer conexão com o banco, usando os dados informados acima
         try {
             conn = (Connection) DriverManager.getConnection(url, username, password);
             System.out.println("Conectado com sucesso ao Banco de Dados");
             return conn;
         } catch (SQLException e) {
+            //Se algo der errado na conexão, o sistema armazena o erro e exibe
+            // na tela acompanhado de uma mensagem
             System.out.println("Não foi possível conectar ao Banco de Dados \n-->" + e);
             return null;
         }
     }
 
+    //Função para resgatar registros do banco de dados
     public ResultSet retrieveDB(String table, String select, String where, String otherOptions, int limit) throws SQLException {
+
+        //Verifica se os parâmetros solicitados pela função foram preenchidos
+        // e define valores padrão, caso contrário
         if (table == null) {
             table = "produtos";
         }
@@ -518,122 +581,182 @@ public class CadastroProdutos extends javax.swing.JFrame {
             otherOptions = "";
         }
 
+        //Declara uma variável para armazenar o limite da seleção sql em formato String
         String formatedLimit = "";
 
+        //Verifica se o limite informado pelo usuário é diferente de 0
         if (limit != 0) {
+            //Caso o limite seja diferente de 0, o valor informado é utilizado
             formatedLimit = "LIMIT " + Integer.toString(limit);
         }
+        //Em caso contrário, o limite é ignorado e a query é composta sem ele
 
+        //Composição da query em uma string
         String query = "SELECT " + select + " FROM " + table + " " + where + " " + otherOptions + " " + formatedLimit;
 
-        System.out.println(query);
-
+        //Bloco de try para tratar possíveis erros
         try {
+            //Estabelece conexão e cria um Statement
             Connection conn = getConnection();
             Statement querySearch = conn.createStatement();
+            //Executa a query e armazena o resultado em uma nova variável
             ResultSet result = querySearch.executeQuery(query);
 
+            //Retorna o resultado da seleção
             return result;
         } catch (SQLException e) {
+            //Se algo der errado, o sistema lança o erro para o 'log'
+            // e retorna nulo para o usuário
             System.out.println("Erro: " + e);
             return null;
         }
     }
 
+    //Função utilizada para deletar registros do banco
     public boolean deleteDB(String table, String where) throws SQLException {
+        //Bloco de try para tratar possíveis erros
         try {
+            //Definição da query para deletar o registro, utilizando a condição
+            // informada pelo usuário, como parâmetro, para selecionar o item
+            // a ser deletado
             String query = "DELETE FROM " + table + " WHERE " + where;
             Connection conn = getConnection();
             Statement deleteSt = conn.createStatement();
 
+            //Executa a query
             deleteSt.execute(query);
 
+            //Se o bloco não caiu em erro e não foi redirecionado para o 'catch'
+            // retorna 'true' (verdadeiro) para informar o usuário do status da
+            // tentativa
             return true;
 
         } catch (SQLException e) {
+            //Se algo der errado, o sistema exibe o erro em uma mensagem, no 'log'
             System.out.println("Erro: " + e);
             return false;
         }
     }
 
+    //Função utilizada para atualizar um registro o banco de dados
     public boolean updateDB(String table, String[] columns, String[] objeto, String where) throws SQLException {
+        //Verifica se o objeto passado pelo usuário como parâmetro é igual
+        // a nulo, e decide, através disso, se a função continua ou retorna
+        // para quem a chamou com status 'false' (falso)
         if (objeto == null) {
             return false;
         }
 
-        String values = null;
-
+        //Declara uma variável para armazenar as colunas a serem alteradas,
+        // bem como os valores que receberão
         String sets = "";
 
+        //Utiliza o parâmetro 'columns' para determinar a quantia de colunas a
+        // serem alteradas, passa uma auma, adicionando-as e seu novo valor à
+        // variável 'sets'
         for (int i = 0; i < columns.length; i++) {
+            //Verifica se a variável 'sets' está vazia e, nesse caso, não adiciona
+            // uma vírgula à frente do próximo valor a ser concatenado com ela
             if (sets.equals("")) {
                 sets = "`" + columns[i] + "` = '" + objeto[i] + "'";
             } else {
+                //Se 'sets' não estiver vazia, o programa continua adicionando
+                // uma vírgula à frente do novo valor
                 sets = sets + ", `" + columns[i] + "` = '" + objeto[i] + "'";
             }
         }
 
+        //Define uma query para atualizar registros no banco, incluindo aqui
+        // a variável 'sets', com as colunas que terão valores alteados, e a 
+        // variável 'where', com a condição utilizada para selecionar os registros
+        // a serem alterados
         String query = "UPDATE " + table + " SET " + sets + " WHERE " + where;
 
+        //Abre uma conexão com o banco de dados e cria um Statement
         Connection conn = getConnection();
-
         Statement insertSt = conn.createStatement();
 
+        //Bloco de Try para tratar de possíveis erros durante a execução da query
         try {
             insertSt.executeUpdate(query);
             System.out.println("Item inserido com sucesso!");
             return true;
         } catch (SQLException e) {
+            //Se algo der errado, o programa exibe o erro junto de uma mensagem
             System.out.println("Erro ao inserir: " + e);
             return false;
         }
     }
 
+    //Função utilizada para inserir registros no banco de dados
     public boolean insertDB(String table, String[] keys, String[] objeto) throws SQLException {
+        //Verifica se o parâmetro 'objeto' (destinado a armazenar os dados do
+        // registro a ser inserido) é nulo
         if (Arrays.toString(objeto).equals("")) {
             return false;
         }
 
-        String values = null;
+        //Declara uma variável do tipo String para armazenar a porção da query
+        // que determina quais valores serão inseridos no banco
+        String values;
+
+        //Declara outra variável para armazenar a porção da query que determina
+        // quais colunas da tabela selecionada receberão valores.
+        //Isso é necessário, pois, campos como ID, por exemplo, recebem valores
+        // automaticamente gerados, portanto não são alterados pelo usuário
         String columns = String.join("`, `", keys);
 
+        //Atribui à variável 'values' a junção dos itens contidos no parâmetro
+        // 'objeto', um array (matriz) de Strings, inserindo uma vírgula entre
+        // esses itens, e colocando cada um entre duas aspas simples, para não
+        // confundi-los com código na hora de executar a query
         values = String.join("', '", objeto);
 
+        //Composição da query de inserção no banco de dados, usando as variáveis:
+        // table -> passada como parâmetro da função, define a tabela a ser usada
+        // columns -> declarada dentro da função, explicada acima
+        // values = declarada dentro da função, explicada acima
         String query = "INSERT INTO " + table + " (`" + columns + "`) VALUES ('" + values + "');";
 
-        System.out.println("Inserir: " + query);
-
+        //Abre conexão com o banco de dados e cria um Statement
         Connection conn = getConnection();
-
         Statement insertSt = conn.createStatement();
 
+        //Bloco de Try para tratar possíveis erros durante a execução da query
         try {
             insertSt.executeUpdate(query);
             System.out.println("Item inserido com sucesso!");
             return true;
         } catch (SQLException e) {
+            //Se algo der errado, é exibida a mensagem de erro, semelhante à
+            // das funções anteriores a essa
             System.out.println("Erro ao inserir: " + e);
             return false;
         }
 
     }
 
+    //Função executada quando a tela do programa é aberta
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        //Bloco de Try para tratar de possíveis erros
         try {
-            Connection conn = null;
-            conn = getConnection();
+            Connection conn = getConnection();
 
             // Query para buscar os Produtos no banco.
             // Também relacionamos o ID de Fornecedor e ID de Categoria
             // com seus respectivos nomes nas tabelas Fornecedores e Categorias
             String selectProdutos = "produtos.idProduto, produtos.nomeProduto, categorias.nomeCategoria AS categoria, produtos.quantiaProduto, fornecedores.nomeFornecedor AS fornecedor, produtos.valorProduto";
+            //Composição do 'JOIN' do MySQL, usado aqui para fazer as associações, citadas acima, funcionarem
             String optionsProdutos = "JOIN fornecedores ON fornecedores.idFornecedor = produtos.idFornecedor JOIN categorias ON categorias.idCategoria = produtos.idCategoria ORDER BY idProduto DESC";
 
-            // Executar a Query dos Produtos e armazenar os resultados em um ResultSet
+            // Executa a Query dos Produtos e armazena os resultados em um ResultSet
             ResultSet result = retrieveDB("produtos", selectProdutos, null, optionsProdutos, 0);
 
+            //Conta o número de resultados obtidos e armazena em uma variável do tipo int
             int columns = result.getMetaData().getColumnCount();
 
+            //Passa um a um os resultados, e os insere na tabela table_produtos,
+            // no formulário
             while (result.next()) {
                 Object[] row = new Object[columns];
                 for (int i = 1; i <= columns; i++) {
@@ -641,48 +764,72 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 }
                 ((DefaultTableModel) table_produtos.getModel()).insertRow(result.getRow() - 1, row);
             }
-//            }
 
+            //Utiliza a função retrieveDB() para resgatar, do banco, as categorias
             result = retrieveDB("categorias", "nomeCategoria", null, " ORDER BY idCategoria ASC", 0);
 
+            //Reaproveita a variável 'columns', dessa vez para contar os resultadoos
+            // da busca pelas categorias
             columns = result.getMetaData().getColumnCount();
 
+            //Remove todos os itens da Combobox de categorias, e adiciona o item
+            // padrão 'Selecione uma Categoria'
             combo_categorias.removeAllItems();
             combo_categorias.addItem("Selecione uma Categoria");
 
+            //Passa um a um os resultados, e os insere na Combobox de categorias
             while (result.next()) {
                 for (int i = 1; i <= columns; i++) {
                     combo_categorias.addItem(result.getObject(i).toString());
                 }
             }
 
+            //Utiliza a função retrieveDB() para resgatar, do banco, os fornecedores
             result = retrieveDB("fornecedores", "nomeFornecedor", null, " ORDER BY idFornecedor ASC", 0);
 
+            //Reaproveita a variável 'columns', dessa vez para contar os resultadoos
+            // da busca pelos fornecedores
             columns = result.getMetaData().getColumnCount();
 
+            //Remove todos os itens da Combobox de fornecedores, e adiciona o item
+            // padrão 'Selecione um Fornecedor'
             combo_fornecedores.removeAllItems();
             combo_fornecedores.addItem("Selecione um Fornecedor");
 
+            //Passa um a um os resultados, e os insere na Combobox de fornecedores
             while (result.next()) {
                 for (int i = 1; i <= columns; i++) {
                     combo_fornecedores.addItem(result.getObject(i).toString());
                 }
             }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(CadastroProdutos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            //Caso algo dê errado o programa lança no 'log' uma mensagem de erro
+            System.out.println("Erro: " + e);
         }
 
 
     }//GEN-LAST:event_formWindowOpened
 
+    //Função executada quando o usuário clica sobre a tabela de produtos
     private void table_produtosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_produtosMouseClicked
+        //Declara uma variável para armazenar o número da linha selecionada na
+        // tabela, ao clicar
         int row = table_produtos.getSelectedRow();
+
+        //Utiliza uma variável do tipo TableModel para armazenar a estrutura da
+        // tabela dos produtos, no formulário
         TableModel model = table_produtos.getModel();
 
+        //Declara um array (matriz) de Strings, para armazenar os valores de cada
+        // coluna da linha selecionada
         String[] produto = new String[6];
 
+        //Verifica se a primeira coluna da linha tem algum valor (logo, não é uma linha vazia)
         if (!model.getValueAt(row, 0).toString().equals("")) {
+            //Se a linha não for vazia, o valor de cada coluna é atribuído a uma
+            // posição do array de Strings 'produto
+            // Obs.: A função toString() converte o valor obtido para o tipo String
             produto[0] = model.getValueAt(row, 0).toString();
             produto[1] = model.getValueAt(row, 1).toString();
             produto[2] = model.getValueAt(row, 2).toString();
@@ -690,18 +837,38 @@ public class CadastroProdutos extends javax.swing.JFrame {
             produto[4] = model.getValueAt(row, 4).toString();
             produto[5] = model.getValueAt(row, 5).toString();
 
+            //Atribui aos campos de texto do formulário, os devidos valores:
+            // txt_idProduto = coluna 0 (ID)
             txt_idProduto.setText(produto[0]);
+
+            // txt_nome = coluna 1 (Nome)
             txt_nome.setText(produto[1]);
+
+            // combo_categorias = coluna 2 (Categoria)
             combo_categorias.setSelectedItem(produto[2]);
+
+            // txt_quantidade = coluna 3 (Quantia)
             txt_quantidade.setText(produto[3]);
+
+            // combo_fornecedores = coluna 4 (Fornecedor)
             combo_fornecedores.setSelectedItem(produto[4]);
+
+            // combo_fornecedores = coluna 4 (Fornecedor)
             txt_valor.setText(produto[5]);
+
+            //Habilita os botões de Atualizar e Excluir, pois um registro foi selecionado
             btn_atualizar.setEnabled(true);
             btn_excluir.setEnabled(true);
+
+            //Desabilita o botão de Cadastrar
             btn_cadastrar.setEnabled(false);
         }
     }//GEN-LAST:event_table_produtosMouseClicked
 
+    //Função executada ao clicar no botão 'Limpar e Desselecionar'
+    //Define o texto das textboxes como nulo, desabilita os botões de Atualizar
+    // e Excluir, habilita o botão de Cadastrar e seleciona os itens padrão das
+    // Comboboxes de Categorias e Fornecedores
     private void btn_limparMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_limparMouseClicked
         table_produtos.clearSelection();
         txt_idProduto.setText(null);
@@ -715,11 +882,17 @@ public class CadastroProdutos extends javax.swing.JFrame {
         btn_cadastrar.setEnabled(true);
     }//GEN-LAST:event_btn_limparMouseClicked
 
+    //Função executada ao clicar no botão Atualizar
     private void btn_atualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atualizarActionPerformed
+        //Bloco de Try para tratar possíveis erros durante a execução
         try {
+            //Declaração das variáveis para armazenar os valores a serem obtidos
+            // dos componentes do formulário
             String nomeProduto = null, nomeFornecedor = null, nomeCategoria = null;
             int quantiaProduto = 0, idFornecedor = 0, idCategoria = 0, idProduto = 0;
             double valorProduto = 0.00;
+
+            //Abre conexão com o banco de dados
             Connection conn = getConnection();
 
             //Atribuição dos valores às variáveis, se o campo correspondente
@@ -736,6 +909,13 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 nomeProduto = txt_nome.getText();
             }
 
+            if (!txt_idProduto.getText().equals("")) {
+                idProduto = Integer.valueOf(txt_idProduto.getText());
+            }
+
+            //Verifica se os itens selecionados nas omboboxes de Categoria e Fornecedor
+            // não são os itens padrão de 'Selecione...', e então busca o ID
+            // do fornecedor/categoria no banco
             if (!combo_categorias.getSelectedItem().equals("Selecione uma Categoria")) {
                 nomeCategoria = combo_categorias.getSelectedItem().toString();
                 ResultSet result = retrieveDB("categorias", "`idCategoria`", "`nomeCategoria` = '" + nomeCategoria + "'", null, 0);
@@ -752,66 +932,103 @@ public class CadastroProdutos extends javax.swing.JFrame {
                 }
             }
 
-            if (!txt_idProduto.getText().equals("")) {
-                idProduto = Integer.valueOf(txt_idProduto.getText());
-            }
-
+            //Declara um array de Strings para armazenar as informações do produto
             String[] produto = new String[5];
+
+            //Decalra um arrya de Strings para armazenar as colunas a serem alteradas
+            // na tabela do banco de dados
             String[] keys = {"nomeProduto", "idCategoria", "quantiaProduto", "idFornecedor", "valorProduto"};
 
+            //Atribui as informações do produto às diferentes posições do array 'prodto'
             produto[0] = nomeProduto;
             produto[1] = Integer.toString(idCategoria);
             produto[2] = Integer.toString(quantiaProduto);
             produto[3] = Integer.toString(idFornecedor);
             produto[4] = Double.toString(valorProduto);
 
+            //Utiliza a função updateDB() para atualiar o registro no banco e 
+            // armazena o resultado em uma variável boolean (true ou false)
             boolean resultUpdate = updateDB("produtos", keys, produto, "idProduto = " + String.valueOf(idProduto));
 
+            //Verifica se a atualização retornou true (verdadeiro, ou seja, sucesso)
+            // Caso sim, atualiza a tabela de produtos para exibir os novos valores
             if (resultUpdate) {
                 updateProdutos();
             }
 
         } catch (SQLException e) {
+            //Se algo der errado, o sistema lança no 'log' uma mensagem de erro
             System.out.println("Erro: " + e);
         }
     }//GEN-LAST:event_btn_atualizarActionPerformed
 
+    //Função executada ao clicar no botão 'Novo Fornecedor'
+    //Abre o formulário de criação/edição/exclusão de fornecedores
     private void btn_novoFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novoFornecedorActionPerformed
         new CadastroFornecedores().setVisible(true);
     }//GEN-LAST:event_btn_novoFornecedorActionPerformed
 
+    //Função executada ao clicar no botão 'Excluir'
     private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
-        int idProduto = 0;
+        //Declara uma variável para armazenar o ID do produto a ser excluído
+        int idProduto;
 
-        if (txt_idProduto.getText().equals("")) {
-            System.out.println("Não é possível excluir um Produto sem informar um ID");
-        } else {
+        //Verifica se o valor da txt_idProduto não está vazio, ou seja, se há
+        // um produto selecionado para ser excluído
+        if (!txt_idProduto.getText().equals("")) {
+            //Bloco de Try para tratar possíveis erros durante a execução
             try {
+                //Resgata, da textbox, o id do produto selecionado
                 idProduto = Integer.valueOf(txt_idProduto.getText());
+                //Utiliza a função deleteDB() para excluir o produto do banco,
+                // armazenando o resultado em uma variável do tipo boolean
                 boolean resultDelete = deleteDB("produtos", "idProduto = " + idProduto);
+                
+                //Verifica a exclusão sucedeu, ou seja, se a variável que armazena
+                // o retorno da função deleteDB() tem valor 'true' (verdadeiro)
                 if (resultDelete) {
+                    //Caso a condição acima seja atendida, executa a função
+                    // updateProdutos(), para atualizar a tabela do formulário
                     updateProdutos();
                 }
             } catch (SQLException e) {
+                //Se algo der errado, lança no 'log' uma mensagem de erro
                 System.out.println("Erro: " + e);
             }
-
         }
     }//GEN-LAST:event_btn_excluirActionPerformed
 
+    //Função executada ao clicar no botão 'Nova Categoria'
+    //Abre o formulário de criação/edição/exclusão de categorias
     private void btn_novaCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novaCategoriaActionPerformed
         new CadastroCategorias().setVisible(true);
     }//GEN-LAST:event_btn_novaCategoriaActionPerformed
 
+    //Função executada sempre que a tela inicial do programa ganha foco.
+    //Por exemplo: Ao minimizá-la e abri-la novamente.
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        //Bloco de Try para tratar possíveis erros durante a execução
         try {
+            //Executa as duas funções abaixo para atualizar as Comboboxes de
+            // Fornecedores e Categorias
             updateFornecedores();
             updateCategorias();
+            
+            //Obs.: O objetivo disso é, quando fechada a tela de criação de
+            //Fornecedores ou Categorias, o sistema atualizar a lista para incluir
+            // possíveis novos registros adicionados
+            
         } catch (SQLException e) {
+            // Se algo der errado, lança no console de saída uma mensagem de erro
             System.out.println("Erro: " + e);
         }
     }//GEN-LAST:event_formWindowGainedFocus
 
+    //Observações finais sobre o código:
+    // As mensagens de erro são apenas uma forma de testar o código, elas não
+    // serão exibidas para o usuário, por este ser um software simples
+    
+    
     /**
      * @param args the command line arguments
      */
